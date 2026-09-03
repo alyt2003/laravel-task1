@@ -7,6 +7,44 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Docker Development Setup
+
+This project runs via Docker Compose: a PHP 8.3 app container (`php artisan serve`, built assets via Vite) and a MySQL 8 container.
+
+**Prerequisites:** Docker Desktop with WSL2 integration enabled, project checked out inside the WSL filesystem (e.g. `\\wsl.localhost\Ubuntu\home\<user>\...` / `/home/<user>/...`).
+
+```bash
+# 1. Build the images
+docker compose build
+
+# 2. Start the containers (first boot auto-runs composer/npm install, .env + APP_KEY setup)
+docker compose up -d
+
+# 3. Run database migrations
+docker compose exec app php artisan migrate
+
+# 4. Verify
+docker compose ps
+docker compose logs -f app
+curl http://localhost:8000/up
+```
+
+Common commands:
+
+```bash
+docker compose exec app composer install
+docker compose exec app php artisan migrate
+docker compose exec app php artisan migrate:fresh --seed
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan cache:clear
+docker compose exec app npm install
+docker compose exec app npm run build
+docker compose down            # stop containers (keeps DB data)
+docker compose down -v         # stop and wipe DB data
+```
+
+The app is served at **http://localhost:8000**. MySQL is reachable from the host (e.g. Navicat) at **127.0.0.1:3307** (mapped from the container's 3306 to avoid clashing with a local MySQL install); inside Docker, Laravel connects to it via the service name `mysql:3306` (see `.env`).
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
