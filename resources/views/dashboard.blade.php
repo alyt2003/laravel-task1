@@ -97,10 +97,42 @@
             color: #6b7280;
             font-size: 14px;
         }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            margin-bottom: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #111827;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: 1px solid #111827;
+        }
+
+        .btn:hover {
+            background: #1f2933;
+        }
     </style>
 </head>
 <body>
-    <h1>Dashboard</h1>
+    <div class="page-header">
+        <h1>Dashboard</h1>
+        <a class="btn" href="{{ route('dashboard.endpoints') }}">API Endpoints</a>
+    </div>
 
     <div class="stats">
         <div class="stat-card">

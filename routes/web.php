@@ -8,3 +8,4 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index']);
+Route::get('/dashboard/api-endpoints', [DashboardController::class, 'apiEndpoints'])->name('dashboard.endpoints');
