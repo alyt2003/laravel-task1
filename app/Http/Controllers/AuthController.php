@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Services\AuthService;
 class AuthController extends Controller
 {
+    public function __construct(
+        private AuthService $authService
+    ) {}
     public function register(StoreUserRequest $request){
-        $user=User::create($request->validated());
-        return response()->json($user,201);
+        $user=$this->authService->register($request->validated());
+        return response()->json($user,202);
     }
 
     public function login(Request $request){
