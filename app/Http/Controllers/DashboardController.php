@@ -13,7 +13,7 @@ class DashboardController extends Controller
         $totalUsers = User::count();
         $totalPosts = Post::count();
 
-        $users = User::select('id', 'name', 'email')->get();
+        $users = User::select('id', 'name', 'email', 'created_at')->get();
         $posts = Post::with('user:id,name')->latest()->get();
 
         return view('dashboard', [

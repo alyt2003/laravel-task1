@@ -1,55 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Edit User - Dashboard</title>
-    <style>
-        @include('partials.dashboard-styles')
-    </style>
-</head>
-<body>
-    <div class="page-header">
-        <h1>Edit User</h1>
-        <a class="btn btn-secondary" href="/dashboard">Back to Dashboard</a>
+@extends('layouts.admin')
+
+@section('title', 'Edit User')
+@section('page-title', 'Edit User')
+@section('page-subtitle', 'Update this user\'s account details.')
+
+@section('content')
+    <div class="mx-auto max-w-xl">
+        <a href="{{ url('/dashboard') }}#users" class="mb-4 inline-flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Dashboard
+        </a>
+
+        <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            @if ($errors->any())
+                <div class="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                    <ul class="list-inside list-disc space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-5">
+                @csrf
+                @method('PUT')
+
+                <div>
+                    <label for="name" class="mb-1.5 block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required
+                        class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required
+                        class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password" minlength="8"
+                        class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                    <p class="mt-1.5 text-xs text-gray-400">Leave blank to keep the current password.</p>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
+                        Save Changes
+                    </button>
+                    <a href="{{ url('/dashboard') }}#users" class="inline-flex items-center justify-center rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="section form-section">
-        @if ($errors->any())
-            <div class="alert alert-error">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="/dashboard/users/{{ $user->id }}">
-            @csrf
-            @method('PUT')
-
-            <div class="field">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required>
-            </div>
-
-            <div class="field">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required>
-            </div>
-
-            <div class="field">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" minlength="8">
-                <div class="hint">Leave blank to keep the current password.</div>
-            </div>
-
-            <div class="actions">
-                <button type="submit" class="btn">Save Changes</button>
-                <a class="btn btn-secondary" href="/dashboard">Cancel</a>
-            </div>
-        </form>
-    </div>
-</body>
-</html>
+@endsection

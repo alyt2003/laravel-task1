@@ -34,4 +34,15 @@ class User extends Authenticatable
     public function posts(){
         return $this->hasMany(Post::class);
     }
+
+    /**
+     * Whether this user has the "admin" role. Used to gate access to the
+     * Blade admin dashboard (see EnsureUserIsAdmin middleware). The "role"
+     * column is intentionally left out of #[Fillable] above so it can never
+     * be mass-assigned through registration or the admin "Add User" form.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 }
