@@ -12,7 +12,8 @@
         "php": "^8.3",
         "laravel/framework": "^13.17",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "livewire/livewire": "3.7.15"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -79,15 +80,23 @@
             "dont-discover": []
         }
     },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "php-http/discovery": true
-        }
+"config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "allow-plugins": {
+        "pestphp/pest-plugin": true,
+        "php-http/discovery": true
     },
+    "audit": {
+        "ignore": {
+            "PKSA-bgw4-5zmg-2njg": {
+                "apply": "block",
+                "reason": "Required Livewire 3.7 for coursework"
+            }
+        }
+    }
+},
     "minimum-stability": "stable",
     "prefer-stable": true
 }

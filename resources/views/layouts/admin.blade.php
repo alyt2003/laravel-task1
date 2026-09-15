@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Dashboard') · Admin</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">
     <div class="min-h-screen">
@@ -128,5 +129,6 @@
         }
     </script>
     @yield('scripts')
+    @livewireScripts
 </body>
 </html>
