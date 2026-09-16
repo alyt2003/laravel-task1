@@ -19,13 +19,15 @@ class PostController extends Controller
         ]);
     
         $user = $request->user();
-    
-        $post = Post::create([
-            'user_id' => $user->id,
+
+        // Creates the post through the User hasMany Posts relationship,
+        // instead of Post::create(['user_id' => ...]) — Eloquent sets the
+        // foreign key for us.
+        $post = $user->posts()->create([
             'title' => $request->input('title'),
             'content' => $request->input('content'),
         ]);
-    
+
         return response()->json($post, 201);
     }
     public function editPost(Request $request, $id)
