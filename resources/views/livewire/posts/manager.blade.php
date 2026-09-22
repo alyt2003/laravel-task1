@@ -1,8 +1,8 @@
 <div class="rounded-2xl border border-gray-100 bg-white shadow-sm">
     <div class="flex flex-col gap-4 border-b border-gray-100 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <h2 class="text-base font-semibold text-gray-900">Users Management</h2>
-            <p class="mt-0.5 text-sm text-gray-500">View all registered users and manage their accounts.</p>
+            <h2 class="text-base font-semibold text-gray-900">Posts Management</h2>
+            <p class="mt-0.5 text-sm text-gray-500">Create and manage all posts created by users.</p>
         </div>
 
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -12,8 +12,8 @@
                 </svg>
                 <input
                     type="text"
-                    id="userSearch"
-                    placeholder="Search users by name or email..."
+                    id="postSearch"
+                    placeholder="Search posts by title..."
                     class="w-full rounded-lg border border-gray-200 py-2 pl-9 pr-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:w-72"
                 >
             </div>
@@ -21,7 +21,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
-                Add New User
+                Add New Post
             </button>
         </div>
     </div>
@@ -32,43 +32,35 @@
         </div>
     @endif
 
-    @if ($errorMessage)
-        <div class="mx-5 mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-            {{ $errorMessage }}
-        </div>
-    @endif
-
-    @if ($users->isEmpty())
-        <p class="p-6 text-sm text-gray-500">No users found.</p>
+    @if ($posts->isEmpty())
+        <p class="p-6 text-sm text-gray-500">No posts found.</p>
     @else
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-100 text-sm">
                 <thead>
                     <tr class="text-left text-xs font-semibold uppercase tracking-wide text-gray-400">
                         <th class="px-5 py-3">ID</th>
-                        <th class="px-5 py-3">Name</th>
-                        <th class="px-5 py-3">Email</th>
-                        <th class="px-5 py-3">Role</th>
+                        <th class="px-5 py-3">Title</th>
+                        <th class="px-5 py-3">Content Preview</th>
+                        <th class="px-5 py-3">Owner</th>
                         <th class="px-5 py-3">Created At</th>
                         <th class="px-5 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="usersTableBody" class="divide-y divide-gray-100">
-                    @foreach ($users as $user)
-                        <tr wire:key="user-{{ $user->id }}" class="user-row hover:bg-gray-50 transition-colors" data-search="{{ strtolower($user->name.' '.$user->email) }}">
-                            <td class="px-5 py-3.5 text-gray-500">{{ $user->id }}</td>
-                            <td class="px-5 py-3.5 font-medium text-gray-900">{{ $user->name }}</td>
-                            <td class="px-5 py-3.5 text-gray-600">{{ $user->email }}</td>
-                            <td class="px-5 py-3.5">
-                                <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">User</span>
-                            </td>
-                            <td class="px-5 py-3.5 text-gray-500">{{ $user->created_at?->format('M d, Y') ?? '—' }}</td>
+                <tbody id="postsTableBody" class="divide-y divide-gray-100">
+                    @foreach ($posts as $post)
+                        <tr wire:key="post-{{ $post->id }}" class="post-row hover:bg-gray-50 transition-colors" data-search="{{ strtolower($post->title) }}">
+                            <td class="px-5 py-3.5 text-gray-500">{{ $post->id }}</td>
+                            <td class="px-5 py-3.5 font-medium text-gray-900">{{ $post->title }}</td>
+                            <td class="px-5 py-3.5 text-gray-500">{{ \Illuminate\Support\Str::limit($post->content, 60) }}</td>
+                            <td class="px-5 py-3.5 text-gray-600">{{ $post->user->name ?? 'Unknown' }}</td>
+                            <td class="px-5 py-3.5 text-gray-500">{{ $post->created_at?->format('M d, Y') ?? '—' }}</td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center justify-end gap-2">
-                                    <button type="button" wire:click="openEditModal({{ $user->id }})" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+                                    <button type="button" wire:click="openEditModal({{ $post->id }})" class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
                                         Edit
                                     </button>
-                                    <button type="button" wire:click="deleteUser({{ $user->id }})" wire:confirm="Delete this user? This cannot be undone." class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors">
+                                    <button type="button" wire:click="deletePost({{ $post->id }})" wire:confirm="Delete this post? This cannot be undone." class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors">
                                         Delete
                                     </button>
                                 </div>
@@ -77,18 +69,18 @@
                     @endforeach
                 </tbody>
             </table>
-            <p id="usersEmptyState" class="hidden p-6 text-center text-sm text-gray-500">No users match your search.</p>
+            <p id="postsEmptyState" class="hidden p-6 text-center text-sm text-gray-500">No posts match your search.</p>
         </div>
     @endif
 
-    {{-- Add New User modal --}}
+    {{-- Add / Edit Post modal --}}
     @if ($showModal)
         <div class="fixed inset-0 z-50 flex items-center justify-center px-4">
             <div class="fixed inset-0 bg-black/40" wire:click="closeModal"></div>
 
             <div class="relative w-full max-w-md rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
                 <div class="mb-5 flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900">{{ $editingId ? 'Edit User' : 'Add New User' }}</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ $editingId ? 'Edit Post' : 'Add New Post' }}</h3>
                     <button type="button" wire:click="closeModal" class="rounded-lg p-1 text-gray-400 hover:bg-gray-50 hover:text-gray-600">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -108,29 +100,31 @@
 
                 <form wire:submit="save" class="space-y-5">
                     <div>
-                        <label for="name" class="mb-1.5 block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" id="name" wire:model="name" required
+                        <label for="post-owner" class="mb-1.5 block text-sm font-medium text-gray-700">Owner</label>
+                        <select id="post-owner" wire:model="userId" required
+                            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                            <option value="" disabled>Select a user</option>
+                            @foreach ($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="post-title" class="mb-1.5 block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" id="post-title" wire:model="title" required
                             class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
                     </div>
 
                     <div>
-                        <label for="email" class="mb-1.5 block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="email" wire:model="email" required
-                            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                    </div>
-
-                    <div>
-                        <label for="password" class="mb-1.5 block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" id="password" wire:model="password" minlength="8" @required(! $editingId)
-                            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                        @if ($editingId)
-                            <p class="mt-1.5 text-xs text-gray-400">Leave blank to keep the current password.</p>
-                        @endif
+                        <label for="post-content" class="mb-1.5 block text-sm font-medium text-gray-700">Content</label>
+                        <textarea id="post-content" wire:model="content" required rows="6"
+                            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"></textarea>
                     </div>
 
                     <div class="flex items-center gap-3 pt-2">
                         <button type="submit" wire:loading.attr="disabled" wire:target="save" class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors disabled:opacity-60">
-                            <span wire:loading.remove wire:target="save">{{ $editingId ? 'Save Changes' : 'Create User' }}</span>
+                            <span wire:loading.remove wire:target="save">{{ $editingId ? 'Save Changes' : 'Create Post' }}</span>
                             <span wire:loading wire:target="save">Saving...</span>
                         </button>
                         <button type="button" wire:click="closeModal" class="inline-flex items-center justify-center rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">

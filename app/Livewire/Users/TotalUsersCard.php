@@ -14,6 +14,7 @@ use Livewire\Component;
 class TotalUsersCard extends Component
 {
     #[On('user-created')]
+    #[On('user-deleted')]
     public function refresh(): void
     {
         // Re-rendering re-queries the count below — nothing else to do here.
